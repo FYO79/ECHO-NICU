@@ -1,0 +1,31 @@
+{
+ "name": "WCH Echo Hemodynamic Forms",
+ "short_name": "Echo Hemodynamic",
+ "description": "WCH NICU echo hemodynamic forms: PDA, PPHN and hypotension, with auto scoring. Works offline; data stays on this device.",
+ "start_url": "./",
+ "scope": "./",
+ "display": "standalone",
+ "orientation": "any",
+ "background_color": "#F3F6F7",
+ "theme_color": "#16294D",
+ "icons": [
+  {
+   "src": "icon-192.png",
+   "sizes": "192x192",
+   "type": "image/png",
+   "purpose": "any"
+  },
+  {
+   "src": "icon-512.png",
+   "sizes": "512x512",
+   "type": "image/png",
+   "purpose": "any maskable"
+  },
+  {
+   "src": "icon-800.png",
+   "sizes": "800x800",
+   "type": "image/png",
+   "purpose": "any"
+  }
+ ]
+}

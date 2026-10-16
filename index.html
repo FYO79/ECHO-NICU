@@ -1,0 +1,435 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#16294D">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="WCH Echo">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" type="image/png" href="icon-192.png">
+<title>WCH NICU Echo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=IBM+Plex+Mono:wght@400;600&display=swap">
+<style>
+:root{--bg:#F3F6F7;--panel:#FFFFFF;--ink:#14232A;--muted:#5B6E76;--line:#D6E0E3;--accent:#0F6E7A;--accent-soft:#E0F0F2;--field:#F8FAFB;--ok:#2E7D4F;--ok-soft:#E3F2E8;--warn:#A86700;--warn-soft:#FBF0DC;--crit:#B3261E;--crit-soft:#FBE4E2;
+--f-body:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;--f-mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace}
+@media (prefers-color-scheme:dark){:root{--bg:#0D1518;--panel:#152126;--ink:#E4EEF0;--muted:#8FA4AB;--line:#26363C;--accent:#5CC3CF;--accent-soft:#163338;--field:#0F1A1E;--ok:#6CCB8F;--ok-soft:#173023;--warn:#F0B44C;--warn-soft:#33270F;--crit:#F2877F;--crit-soft:#3A1A18;color-scheme:dark}}
+*{box-sizing:border-box}[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font:16px/1.45 var(--f-body);margin:0}
+.wrap{max-width:1000px;margin:0 auto;padding-inline:16px;padding-block:0 48px}
+button,input,textarea{font:inherit;color:inherit}input,textarea{accent-color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line);padding-block:10px 8px}
+.toprow{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.brand{font-weight:700;font-size:20px;margin-right:auto;letter-spacing:.04em}
+.brand small{display:block;font-weight:400;font-size:12px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+.btn{border:1px solid var(--line);background:var(--panel);border-radius:8px;padding:6px 10px;font-size:14px;cursor:pointer}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:var(--bg);font-weight:700}
+input[type=date]#d{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:5px 8px;font-size:14px}
+.tabs{display:flex;gap:8px;padding-block:10px 2px}
+.tab{flex:1 1 0;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--panel);cursor:pointer;font-weight:700;letter-spacing:.06em;font-size:15px;text-align:center}
+.tab[aria-current="true"]{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent);background:var(--accent-soft);color:var(--accent)}
+h1{margin:14px 0 10px;font-size:22px;line-height:1.15}
+.card{display:block;background:var(--panel);border:1px solid var(--line);border-radius:12px;margin-bottom:10px;overflow:hidden}
+.card>h2,.card>summary{margin:0;font-size:13px;letter-spacing:.09em;text-transform:uppercase;color:var(--accent);padding:9px 12px 6px;font-weight:700;cursor:default}
+details.card>summary{cursor:pointer}
+.sc-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+th,td{padding:7px 12px;text-align:left;vertical-align:top;border-top:1px solid var(--line)}
+th{font:600 12px var(--f-mono);color:var(--muted);background:var(--field)}
+td:first-child{font-weight:700;width:30%}
+tr.sub td{background:var(--accent-soft);color:var(--accent);font-size:13px;letter-spacing:.05em;text-transform:uppercase}
+input[type=text],input[type=number],input[type=date],textarea{background:var(--field);border:1px solid var(--line);border-radius:8px;padding:5px 8px}
+input[type=number]{width:88px;font-family:var(--f-mono)}input.mini{width:70px}input[type=text]{width:100%;max-width:300px}
+textarea{width:calc(100% - 24px);margin:4px 12px 12px;min-height:84px}
+label.o{display:inline-flex;gap:6px;align-items:center;margin:2px 14px 2px 0}
+.note{font:12px var(--f-mono);color:var(--muted);margin:0 6px}
+.out{font:600 13px var(--f-mono);color:var(--accent)}.out.bad{color:var(--crit)}.out.wn{color:var(--warn)}
+.pts{text-align:center;font:700 16px var(--f-mono)}
+.badge{display:inline-block;margin-left:8px;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:3px 8px;border-radius:99px;background:var(--accent-soft);color:var(--accent)}
+.badge:empty{display:none}
+.crit{margin:10px 12px 12px;padding:10px 12px;border-radius:10px;background:var(--field);border-left:4px solid var(--line);font-size:15px}
+.crit.ok{background:var(--ok-soft);border-color:var(--ok)}.crit.no{background:var(--crit-soft);border-color:var(--crit)}.crit.wn{background:var(--warn-soft);border-color:var(--warn)}
+.foot{font-size:13px;color:var(--muted);margin-top:14px}.refs{font-size:13px;color:var(--muted);padding:4px 12px 12px}.refs li{margin-bottom:4px}.refs a{color:var(--accent)}
+.beds{display:flex;gap:8px;overflow-x:auto;padding-block:8px 2px}.bed{flex:0 0 auto;min-width:96px;padding:6px 10px;border:1px solid var(--line);border-radius:10px;background:var(--panel);cursor:pointer;text-align:left;font-size:13px;line-height:1.25}.bed b{display:block;font-size:14px}.bed i{font-style:normal;color:var(--muted)}.bed[aria-current="true"]{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent);background:var(--accent-soft)}.bed.add{min-width:0;color:var(--accent);font-weight:700}
+.sumbox{margin-top:14px}.sumbox textarea{width:100%;min-height:150px;font:13px/1.4 ui-monospace,Menlo,monospace}.btns{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--accent);color:var(--bg);padding:8px 14px;border-radius:8px;font-size:14px;z-index:9}
+tr.ln td{width:auto}.ln .it{display:inline-flex;align-items:center;gap:6px;margin:3px 20px 3px 0;flex-wrap:wrap}.lbl{font-weight:700}.lbl2{font-weight:600}.hintx{font:12px var(--f-mono);color:var(--muted)}
+tr.ln input[type=text]{width:150px}tr.ln input[data-k=b-name]{width:300px;max-width:100%}tr.ln input[data-k=b-id]{width:200px;max-width:100%}textarea.spf,.rvx textarea{display:block;width:100%;max-width:520px;min-height:64px;margin:6px 0;padding:8px}.rvx{margin-top:6px}.rvx .nf{display:inline-block;margin:2px 14px 2px 0}.rvx .nf.cm{display:block}tr.ln input[readonly][type=text]{width:110px}tr.ln input[type=date]{width:auto}tr.ln input[type=number]{width:72px}.seg{display:inline-flex;flex-wrap:wrap;gap:6px;position:relative}.seg label.o{margin:0;padding:6px 12px;border:1px solid var(--line);border-radius:99px;background:var(--field);cursor:pointer;white-space:nowrap}.seg label.o:has(input:checked){background:var(--accent-soft);border-color:var(--accent);color:var(--accent);font-weight:700}.seg label.o:has(input:focus-visible){outline:2px solid var(--accent)}.seg input{position:absolute;opacity:0;pointer-events:none;width:0;height:0}input.auto{background:var(--accent-soft);border-color:var(--accent)}
+.sc{table-layout:fixed;min-width:600px}.sc th,.sc td{vertical-align:middle;text-align:center;padding:8px 6px}.sc th:first-child,.sc td:first-child{text-align:left;padding-left:12px}.sc input.sv{width:84px;text-align:center}.sc td.hit{background:var(--accent-soft);color:var(--accent);font-weight:700}.sc td.pts{font-size:16px}.sc tr.in td{background:var(--field);text-align:left;font-weight:400}.sc tr.in td:first-child{font-weight:600}
+.exs{display:flex;gap:6px;flex-wrap:wrap;align-items:center;padding-block:6px 2px;font-size:13px;color:var(--muted)}.exs button{border:1px solid var(--line);background:var(--panel);border-radius:99px;padding:3px 10px;font-size:13px;cursor:pointer}.exs button[aria-current="true"]{border-color:var(--accent);background:var(--accent-soft);color:var(--accent);font-weight:700}
+.repbar{padding:0 12px}.repcmp{padding:0 12px 4px;font-size:14px}.repcmp select{background:var(--field);border:1px solid var(--line);border-radius:8px;padding:4px 8px}
+.repbody{padding:4px 12px 12px;font-size:15px}.repbody h3{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin:14px 0 4px;border-bottom:1px solid var(--line);padding-bottom:3px}.repbody .kv{margin:2px 0}.repbody .rt{white-space:pre-wrap}.repbody .cmp th,.repbody .cmp td{padding:5px 8px;font-size:14px;border-top:1px solid var(--line)}.repbody .cmp td:first-child{width:auto;font-weight:600}.repbody .up{color:var(--warn)}.repbody .mu{color:var(--muted)}.repbody .sec{margin:8px 0 2px;font-weight:700}
+@media (max-width:640px){tr.f td{display:block;width:100%;border-top:0;padding-block:3px}tr.f td:first-child{border-top:1px solid var(--line);padding-top:8px}.tab{font-size:13px;padding:9px 4px}}
+@media print{body.pr header,body.pr .wrap>*:not(#rep){display:none}#rep .repbar,#rep .repcmp{display:none}header .btn,header input,.tabs,.beds,.exs,.foot{display:none}header.top{position:static;border:0}body{background:#fff;color:#000}.card{break-inside:avoid;border-color:#999}details.card:not([open])>*:not(summary){display:block}}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap">
+ <div class="toprow">
+  <div class="brand">WCH<small>NICU · Echo hemodynamic forms</small></div>
+  <button class="btn" id="print">Print / PDF</button>
+  <button class="btn" id="clear">Clear form</button>
+  <button class="btn pri" id="new">+ Baby</button>
+ </div>
+ <div class="beds" id="beds" role="tablist" aria-label="Babies"></div>
+ <div class="exs" id="exs"></div>
+ <div class="tabs" id="tabs" role="tablist"></div>
+</div></header>
+<div class="wrap"><div id="case" style="margin-top:12px"></div><h1 id="title"></h1><div id="form"></div>
+<section class="card" id="rep"><h2>Report (findings, recommendation, comparison)</h2>
+<div class="repbar"><div class="btns"><button class="btn pri" id="cp1">Copy report</button><button class="btn" id="cpall">Copy all three forms</button><button class="btn" id="prr">Print report</button></div></div>
+<div class="repcmp">Compare with: <select id="cmpsel" aria-label="Compare with exam"></select></div>
+<div class="repbody" id="repbody"></div><textarea id="sum" hidden readonly aria-label="Report text"></textarea></section>
+<section class="card"><h2>Baby data</h2><div class="repbar"><div class="btns"><button class="btn" id="bk">Send / save backup</button><label class="btn" for="rin">Receive / restore</label><input type="file" id="rin" accept=".json" hidden><button class="btn" id="del">Delete this baby</button></div><p class="note" style="margin:0 0 10px">Saved on this device only. To enter a new exam for the same baby, change the Study date: the report then compares it with the earlier exam.</p></div></section>
+<details class="card"><summary>References and notes</summary><ol class="refs">
+<li>Guidelines and recommendations for targeted neonatal echocardiography and cardiac point-of-care ultrasound in the NICU: an update from the American Society of Echocardiography. <i>J Am Soc Echocardiogr</i> 2024;37(2):171-215.</li>
+<li>Canadian Paediatric Society. Applications of point-of-care ultrasonography in the NICU: a Canadian perspective. <a href="https://cps.ca/en/documents/position/POCUS">cps.ca</a></li>
+<li>Kharrat A, McNamara PJ, Weisz D, Jain A. Merits and perils of targeted neonatal echocardiography-based hemodynamic research: a position statement. <i>Can J Physiol Pharmacol</i> 2019;97(3):183-186. <a href="https://doi.org/10.1139/cjpp-2018-0458">doi</a></li>
+<li>Jain A, El-Khuffash AF, van Herpen CH, et al. Cardiac function and ventricular interactions in persistent pulmonary hypertension of the newborn. <i>Pediatr Crit Care Med</i> 2021;22(2):e145-e157. <a href="https://doi.org/10.1097/PCC.0000000000002579">doi</a></li>
+<li>Multidisciplinary consensus recommendations for the diagnosis and management of PPHN (CHOP). <a href="https://www.chop.edu/multidisciplinary-consensus-recommendations-diagnosis-and-management-persistent-pulmonary">chop.edu</a></li>
+<li>PASP / systemic systolic BP grading of pulmonary hypertension (mild 1/3 to 2/3, moderate 2/3 to 1, severe above 1): <i>Front Pediatr</i> 2017;5:168. <a href="https://doi.org/10.3389/fped.2017.00168">doi</a></li>
+<li>Elsayed YN, Amer R, Seshia MM. The impact of integrated evaluation of hemodynamics using targeted neonatal echocardiography with indices of tissue oxygenation: a new approach. <i>J Perinatol</i> 2017.</li>
+<li>Elsayed YN, Fraser D. Integrated evaluation of neonatal hemodynamics, Part 2: systematic bedside assessment. <i>Neonatal Netw</i> 2016;35(4):192-203. <a href="https://doi.org/10.1891/07300832.35.4.192">doi</a></li>
+<li>Elsayed Y, Dakshinamurti S, Soni R, Buffo I, Seshia MM. Serum BNP together with a novel PDA score (48 to 72 h, Winnipeg): <i>Pediatr Res</i> 2011 (abstract). Soliman RM, Elsayed Y, et al. LV eccentricity index and PAP / hsPDA (medRxiv 2020 preprint).</li>
+<li>Elsayed Y, Abdul Wahab MG. A new physiologic-based integrated algorithm in the management of neonatal hemodynamic instability. <i>Eur J Pediatr</i> 2021. <a href="https://doi.org/10.1007/s00431-021-04307-5">doi</a> (five categories; markers; LVO 174-321 and SVR 149-246 as 10th-90th centiles; DO2 formula.)</li>
+<li>Elsayed YN, Louis D, Ali YH, et al. Integrated evaluation of hemodynamics: a novel approach for the assessment and management of preterm infants with compromised systemic circulation. <i>J Perinatol</i> 2018 (normative LVO and SVR centiles).</li>
+<li>Giesinger RE, McNamara PJ. Hemodynamic instability in the critically ill neonate: an approach to cardiovascular support based on disease pathophysiology. <i>Semin Perinatol</i> 2016;40(3):174-188. <a href="https://doi.org/10.1053/j.semperi.2015.12.005">doi</a></li>
+<li>Timberline S, Bhatt A, Sunderji S, et al. Novel scoring tool of hypoxemic respiratory failure and pulmonary hypertension (HRF/PH score) for PPHN. <i>J Perinatol</i> 2023;43:1281-1287. <a href="https://doi.org/10.1038/s41372-023-01762-w">doi</a> Not calculated here: the point cut-offs are only in the paper's figure (categories: mild 0-5, moderate 6-10, severe 11-15).</li>
+<li>Neonatologist-performed echocardiography in neonatal pulmonary hypertension: narrative review. <i>Diagnostics</i> 2025;15:3154 (TAPSE below 4 mm and RV FAC below 20% as significant RV dysfunction; septal EI above 1.0 as RV pressure load).</li>
+<li>Canadian Neonatal Point of Care Ultrasound Society (CNPOCUS), <a href="https://cnpocus.org">cnpocus.org</a>. Checked October 2026: the site is a society landing page and publishes no clinical thresholds, scores or protocols. Its co-chairs Y. Elsayed and M. G. Abdul Wahab wrote the 2021 algorithm cited above, which the hypotension tab now follows.</li>
+<li>IVC collapsibility index = (max - min) / max: hypovolemia above 50%, normal / euvolemia 20 to 50% (cut-offs as specified by the WCH team; below 20% is not classified here).</li>
+<li>Pre-post ductal SpO2 gradient above 5 to 10% supports right-to-left shunting; MAP 45 to 55 mmHg suggested for most term neonates with PPHN (conditional): CHOP consensus above.</li>
+<li><b>PDA tab:</b> the shunting score, its cut-offs and the treatment criteria are exactly those of the WCH PDA form. <b>Unit values:</b> other normal ranges (N) are from the WCH forms; SVR 149 to 246 and LVO 174 to 321 also match the 2021 algorithm. SVR is calculated as (mean BP - RAP) / LVO in L/kg/min. Outputs are decision aids, not diagnoses.</li>
+</ol></details>
+<p class="foot">Entries are saved on this device only. Nothing is sent anywhere.</p></div>
+<script>
+
+// Edit CASE / FORMS to change parameters. Field types: "text" | {r:[..]} radio | {cb:[..]} checkboxes | {n:'label',u:'unit',N:'normal'} number | {x:'hint'} text | {date:1} | {out:'id'} auto value
+const CS=['Cardiac structure',{r:['Normal','Abnormal']},{x:'Specify',sp:1}];
+const RV=['Echo reviewed with cardiologist',{r:['No','Yes'],id:'rvw'},{rv:1}];
+const SH=t=>['#'+t];
+const IVH=x=>[['IVC collapsibility',{n:'Max',u:'mm',id:'ivx'+x},{n:'Min',u:'mm',id:'ivn'+x},{n:'Collapsibility index',u:'%',id:'ivi'+x,ro:1},{out:'o_iv'+x},'<span class="hintx">(max - min) / max. Hypovolemia > 50%; normal / euvolemia 20-50%</span>']];
+const CASE=[
+{h:'Patient',rows:[
+ ['@',{lab:'Name',x:'Patient name',k:'b-name'},{lab:'ID',x:'ID / MRN',k:'b-id'},{lab:'Sex',r:['Male','Female','DSD'],k:'b-sex'}],
+ ['@',{lab:'Date of birth',date:1,id:'dob',k:'b-dob'},{lab:'GA at birth',n:'',u:'wk',id:'gaw',k:'b-gaw'},{n:'+',u:'d',id:'gad',k:'b-gad'},{lab:'Study date',sd:1}],
+ ['@',{lab:'Birth weight',n:'',u:'g',id:'bw',k:'b-bw'},{lab:'Current weight',n:'',u:'g',id:'cw',k:'c-cw'},{lab:'Age',n:'',u:'days',id:'ageb',ro:1},{lab:'PMA',pma:1},{out:'o_age'}]]},
+
+{h:'Clinical data',rows:[
+ ['@',{lab:'Blood pressure',n:'Sys',u:'',id:'sbp'},{n:'Dia',u:'',id:'dbp'},{n:'Mean',u:'',id:'mbp',ro:1},{n:'PP',u:'mmHg',id:'ppb',ro:1},{out:'o_bp'}],
+ ['@',{lab:'SpO2 pre',n:'',u:'%',id:'spre'},{lab:'post',n:'',u:'%',id:'spost'},{lab:'Difference',n:'',u:'%',id:'sdiff',ro:1},{lab:'Heart rate',n:'',u:'bpm',id:'hr'},{out:'o_sp'}],
+ ['Respiratory support',{r:['Room air','HFNC','CPAP','NIPPV','Conventional ventilation','HFOV'],id:'rs'}],
+ ['Settings',{rsbox:1}],
+ ['Perfusion',{n:'Lactate',u:'mmol/L',id:'lact'},{n:'Base deficit',u:'mmol/L',id:'bd'}],
+ ['Urine output / Hb',{n:'Urine output',u:'mL/kg/h',id:'uop'},{n:'Hb',u:'g/dL',id:'hb'}],
+ ['Vasoactive / iNO',{cb:['None','Dopamine','Dobutamine','Epinephrine','Norepinephrine','Vasopressin','Milrinone','Hydrocortisone','iNO']}],
+ ['PDA treatment so far',{r:['None','Ibuprofen','Paracetamol','Indomethacin']}],
+ ['Clinical signs',{cb:['Murmur','Bounding pulses','Prolonged CRT','Feed intolerance / NEC concern','Metabolic acidosis','Pulmonary hemorrhage']}],
+ ['RAP estimate',{n:'',u:'mmHg',id:'rap'},'5 is assumed if blank']]}];
+const FORMS={
+pda:{tab:'PDA',title:'PDA Hemodynamic Assessment',sections:[
+ {h:'1: Assessment of cardiac structures',rows:[CS,RV]},
+ {h:'2: Assessment of PDA characteristics',rows:[['Diameter (narrowest)',{n:'',u:'mm',id:'dia'},'<span class="badge" id="dcat"></span>','Moderate 1.5 - 3.0 · Large > 3.0']]},
+ {h:'3: Assessment of PDA CW Doppler pattern',rows:[['@',{lab:'Flow pattern',r:['Restrictive L-R flow','Pulsatile pattern','Growing pattern','Bidirectional flow','R-L flow'],seg:1}],['@',{lab:'Predominant (> 90%) left-to-right flow',r:['Yes','No'],id:'lr',seg:1}]]},
+ {h:'4: Assessment of PDA shunting score (WCH)',score:[['LA : Ao ratio',[1.3,2.2],1],['Mitral E (m/s)',[0.45,0.8],1],['PV D wave (cm/s)',[0.3,0.5],1],['LVO (ml/min/kg)',[250,430],1,'lvoA'],['IVRT (ms)',[30,50],-1]]},
+ {h:'5: Recommendation',rec:1},
+ {h:'Follow up exams',rows:[['Date / result',{date:1},{x:'Result'}],['Date / result',{date:1},{x:'Result'}]]}]},
+pphn:{tab:'PPHN',title:'PPHN Hemodynamic Assessment',sections:[
+ {h:'1: Assessment of cardiac structures',rows:[CS,RV]},
+ {h:'2: Assessment of pulmonary hypertension severity',rows:[
+  ['PFO/ASD shunt direction',{r:['L-R','Bidirectional','R-L'],id:'pfo'}],
+  ['PDA flow direction',{r:['L-R','Bidirectional','R-L','No PDA'],id:'pdad'},{n:'PDA PG',u:'mmHg',id:'pdapg'}],
+  ['IVC diameter',{r:['Normal','Dilated']}],...IVH(''),
+  ['@',{lab:'TR jet: measured TR',n:'',u:'mmHg',id:'trpg'},{lab:'Vmax',n:'',u:'m/s',id:'trv'},{lab:'Estimated PAP',n:'',u:'mmHg',id:'pap',ro:1}],
+  ['PAAT / RVET',{n:'PAAT',u:'ms',id:'paat'},{n:'RVET',u:'ms',id:'rvet'},{n:'PAAT/RVET',id:'parat',ro:1},{out:'o_pa'},'N: > 0.31'],
+  ['IVS configuration',{r:['Normal (circular LV)','Moderate PH (flat, D-shaped)','Severe PH (bowing into LV)'],id:'ivs'}],
+  ['Eccentricity index (systolic)',{n:'',id:'eis',N:'1.0 = circular'},'systolic EI reflects RV pressure load; diastolic EI volume load'],
+  ['Estimated PH severity',{out:'o_ph'}]]},
+ {h:'3: Assessment of RV function',rows:[
+  ['RV function by eyeballing',{r:['Normal','Impaired'],id:'rvf'}],['RV size',{r:['Normal','Dilated'],id:'rvs'}],
+  ['TAPSE',{n:'',u:'mm',N:'ELBW 4-5, FT 9-11 mm',id:'tapB'}],['Fractional area change (FAC)',{n:'',u:'%',N:'25-40%',id:'facB'}],['MPI by TDI',{n:'',N:'0.25-0.38'}],
+  ['RVO',{n:'',u:'ml/kg/min',N:'170-320',id:'rvoB'},{n:'VTI',u:'cm',id:'rvtiB'},{n:'RVOT diam',u:'mm',id:'rvdB'}]]},
+ {h:'4: Assessment of LV function',rows:[
+  SH('Preload'),['LVEDd',{n:'',u:'mm',N:'18.8 ± 1.7 mm'}],
+  SH('Cardiac contractility'),['Contractility by eyeballing',{r:['Normal','Abnormal'],id:'lvf'},{x:'Specify',sp:1}],
+  ['M-mode',{n:'EF',u:'%',N:'55-65%',id:'efB'},{n:'FS',u:'%',N:'28-40%'}],['Biplane Simpson / Auto EF',{n:'EF',u:'%',N:'55-65%'}],
+  ['mVCFc',{n:'',N:'1.28 ± 0.22 circ/s'}],['Stress-Velocity Index',{n:'',N:'-2 to +2'}],['MPI "TDI"',{n:'',N:'-0.35 to 0.45'}],
+  SH('Afterload'),['SVR',{n:'',N:'149-246',id:'svrB'}],['LV wall stress',{n:'',u:'g/cm²',N:'30.2 ± 8.7'}],
+  SH('LV output'),['LVO',{n:'',u:'ml/kg/min',N:'170-320',id:'lvoB'},{n:'Ao VTI',u:'cm',id:'vtiB'},{n:'Ao diam',u:'mm',id:'aoB'}],
+  SH('Diastolic function'),['MV E/A ratio',{n:'',N:'0.8-1.4'}]]},
+ {h:'Summary (auto)',box:'pbox'},
+ {h:'5: Recommendation',rec:1}]},
+hypo:{tab:'HYPOTENSION',title:'Hypotension (TnECHO) Hemodynamic Assessment',sections:[
+ {h:'1: Assessment of cardiac structures',rows:[CS,RV]},
+ {h:'2: Assessment of preload',rows:[['Filling by eyeballing',{r:['Normal','Abnormal'],id:'fill'},{x:'Specify',sp:1}],['LVEDD',{n:'',u:'mm',N:'9.8-17 mm',id:'lved'}],['IVC',{r:['Normal','Collapsed','Dilated'],id:'ivc'}],...IVH('C')]},
+ {h:'3: Assessment of cardiac function',rows:[
+  SH('LV systolic function'),['Contractility by eyeballing',{r:['Normal','Abnormal'],id:'lvfC'},{x:'Specify',sp:1}],
+  ['M-mode',{n:'EF',u:'%',N:'55-65%',id:'efC'},{n:'FS',u:'%',N:'28-40%',id:'fsC'}],['Biplane Simpson',{n:'EF',u:'%',N:'55-65%',id:'efC2'}],
+  SH('LV diastolic function'),['MV E/A ratio',{n:'',N:'0.8-1.4'}],
+  SH('Tissue Doppler assessment'),["Systolic peak s' velocity",{n:'',u:'cm/s',N:'< 28 W: 0.2-4.5; > 28 W: 0.3-0.6'}],['MPI',{n:'',N:'0.25-0.38'}],
+  SH('Right ventricular function'),['TAPSE',{n:'',u:'mm',N:'ELBW 4-5, FT 9-11 mm'}],['Fractional area change',{n:'',u:'%',N:'25-40%',id:'facC'}],
+  SH('Other'),['@',{lab:'TR (CWD): measured TR',n:'',u:'mmHg',id:'trpgC'},{lab:'Vmax',n:'',u:'m/s',id:'trvC'},{lab:'Estimated PAP',n:'',u:'mmHg',id:'papC',ro:1}],['MR (CWD)',{n:'',u:'mmHg'}],['PFO shunt direction',{r:['L-R','Bidirectional','R-L']}],['Significant PDA L-R shunt',{r:['Yes','No'],id:'pdaH'}]]},
+ {h:'4: Assessment of cardiac afterload',rows:[['Afterload',{x:'Specify'}]]},
+ {h:'5: Assessment of cardiac output and SVR',rows:[
+  ['LVO',{n:'',u:'ml/kg/min',N:'170-320',id:'lvoC'},{n:'Ao VTI',u:'cm',id:'vtiC'},{n:'Ao diam',u:'mm',id:'aoC'}],
+  ['RVO',{n:'',u:'ml/kg/min',N:'170-320',id:'rvoC'},{n:'RVOT VTI',u:'cm',id:'rvtiC'},{n:'RVOT diam',u:'mm',id:'rvdC'}],
+  ['SVR',{n:'',N:'149-246',id:'svrC'},'(Mean BP - RAP) / LVO in L/kg/min'],['Oxygen delivery (DO2)',{out:'o_do2'},'N: 22-42 mL/kg/min (stable preterm 30 wk); uses RVO if hsPDA']]},
+ {h:'6: Assessment of catheter position',rows:[['Catheter placement',{r:['Good position','Malposed'],id:'cath'}],['Pericardial effusion',{r:['Absent','Present'],id:'pe'}]]},
+ {h:'Hemodynamic pattern (auto)',box:'hbox'},
+ {h:'7: Recommendation',rec:1}]}
+};
+const RSM={'Room air':[],'HFNC':[['Flow','L/min'],['FiO2','%']],'CPAP':[['PEEP','cmH2O'],['FiO2','%']],
+ 'NIPPV':[['PIP','cmH2O'],['PEEP','cmH2O'],['Rate','/min'],['FiO2','%']],
+ 'Conventional ventilation':[['Mode','',1],['PIP','cmH2O'],['PEEP','cmH2O'],['Rate','/min'],['Ti','s'],['MAP','cmH2O'],['FiO2','%']],
+ 'HFOV':[['MAP','cmH2O'],['Amplitude (ΔP)','cmH2O'],['Frequency','Hz'],['FiO2','%']]};
+function rsRender(){const b=document.getElementById('rsbox');if(!b)return;const m=R('rs');
+ if(!m){b.innerHTML='<span class="note">Choose a respiratory support mode</span>';return}
+ const f=RSM[m];if(!f.length){b.innerHTML='<span class="note">No settings for room air</span>';return}
+ const mi=Object.keys(RSM).indexOf(m);
+ b.innerHTML=f.map((x,i)=>x[2]?`<label class="o">${x[0]} <input type="text" style="width:120px" placeholder="e.g. SIMV, A/C" data-k="c-rs${mi}-${i}"></label>`:`<label class="o">${x[0]} <input type="number" inputmode="decimal" step="any" class="mini" data-k="c-rs${mi}-${i}"> ${x[1]}</label>`).join('');
+ b.querySelectorAll('[data-k]').forEach(e=>{const v=V(e.dataset.k);if(v!==undefined)e.value=v})}
+const $=(s,r=document)=>r.querySelector(s),H=(t,c,h)=>{const e=document.createElement(t);if(c)e.className=c;if(h!=null)e.innerHTML=h;return e};
+const SK='nicu-echo-v8';let cur=localStorage.getItem(SK+'-tab')||'pda',uid=0,KP='c';if(!FORMS[cur])cur='pda';
+const key=()=>`${KP}-${uid++}`;
+function field(f){
+ if(typeof f==='string')return f[0]==='<'?f:`<span class="note">${f}</span>`;
+ const L=f.lab?`<span class="lbl">${f.lab}</span>`:'',kk=()=>f.k||key();
+ if(f.out)return `<span class="out" id="${f.out}"></span>`;
+ if(f.rsbox)return '<div id="rsbox"><span class="note">Choose a respiratory support mode</span></div>';
+ if(f.pma)return L+'<input type="text" readonly class="auto" id="pmab" aria-label="PMA"> wk';
+ if(f.sd)return L+'<input type="date" id="d" aria-label="Study date">';
+ if(f.rv)return `<div class="rvx" id="rvx" hidden><span class="nf">Name <input type="text" data-k="${key()}" placeholder="Cardiologist"></span><span class="nf">Date <input type="date" data-k="${key()}"></span><div class="nf cm">Cardiologist comment after revision<textarea data-k="${key()}" rows="3" placeholder="Comment after revision"></textarea></div></div>`;
+ if(f.r){const g='g'+KP+uid++;const rr=f.r.map((o,i)=>`<label class="o"><input type="radio" name="${g}" value="${o}" data-k="${f.k?f.k+'-'+i:key()}" ${f.id?`data-id="${f.id}"`:''}>${o}</label>`).join('');return L+(f.seg?`<span class="seg">${rr}</span>`:rr)}
+ if(f.cb)return f.cb.map(o=>`<label class="o"><input type="checkbox" value="${o}" data-k="${key()}">${o}</label>`).join('');
+ if(f.date)return L+`<input type="date" data-k="${kk()}" ${f.id?`id="${f.id}"`:''}>`;
+ if(f.n!==undefined)return `${L}<span class="nf">${f.n?f.n+' ':''}<input type="number" inputmode="decimal" step="any" data-k="${kk()}" ${f.id?`id="${f.id}"`:''}${f.ro?' readonly class="auto"':''}>${f.u?' '+f.u:''}</span>${f.N?`<span class="note">N: ${f.N}</span>`:''}`;
+ if(f.sp)return `<textarea class="spf" data-k="${kk()}" placeholder="${f.x||''}" rows="2" hidden></textarea>`;
+ return L+`<input type="text" data-k="${kk()}" placeholder="${f.x||''}">`}
+function tbl(rows){const t=H('table');rows.forEach(r=>{const tr=H('tr');
+ if(r[0]==='@'){tr.className='f ln';const d=H('td','',r.slice(1).map(f=>`<span class="it">${field(f)}</span>`).join(''));d.colSpan=2;tr.append(d)}
+ else if(r[0][0]==='#'){tr.className='sub';const d=H('td','',r[0].slice(1));d.colSpan=2;tr.append(d)}
+ else{tr.className='f';tr.append(H('td','',r[0]),H('td','',r.slice(1).map(field).join(' ')))}t.append(tr)});return t}
+function render(){
+ KP='c';uid=0;const cs=$('#case');cs.innerHTML='';
+ CASE.forEach(s=>{const c=H('details','card');c.open=true;c.append(H('summary','',s.h),tbl(s.rows));cs.append(c)});
+ KP=cur;uid=0;const F=FORMS[cur];$('#title').textContent=F.title;const m=$('#form');m.innerHTML='';
+ F.sections.forEach(s=>{const c=H('section','card');c.append(H('h2','',s.h));
+  if(s.rec){const t=H('textarea');t.dataset.k=key();t.placeholder='Recommendation';c.append(t)}
+  else if(s.score)c.append(scoreBox(s.score));
+  else if(s.box){const b=H('div','crit');b.id=s.box;c.append(b)}
+  else c.append(tbl(s.rows));
+  m.append(c)});
+ restore();rsRender();calc()}
+function scoreBox(rows){
+ const w=H('div','sc-wrap');let h='<table class="sc"><colgroup><col style="width:30%"><col style="width:17%"><col style="width:14%"><col style="width:14%"><col style="width:14%"><col style="width:11%"></colgroup><tr><th>Ductus arteriosus parameter</th><th>Value</th><th>0 pt</th><th>1 pt</th><th>2 pt</th><th>Score</th></tr>';
+ rows.forEach(([l,[a,b],d,id])=>{const c=d>0?[`< ${a}`,`${a} - ${b}`,`> ${b}`]:[`> ${b}`,`${a} - ${b}`,`< ${a}`];
+  h+=`<tr><td>${l}</td><td><input type="number" inputmode="decimal" step="any" class="sv" ${id?`id="${id}"`:''} data-k="${key()}" data-a="${a}" data-b="${b}" data-d="${d}"></td><td>${c[0]}</td><td>${c[1]}</td><td>${c[2]}</td><td class="pts"></td></tr>`;
+  if(id)h+=`<tr class="in"><td>LVO inputs</td><td colspan="5"><span class="lbl2">Ao VTI</span> <input type="number" step="any" class="mini" id="vtiA" data-k="${key()}"> cm &nbsp;&nbsp; <span class="lbl2">Aortic valve diameter</span> <input type="number" step="any" class="mini" id="aoA" data-k="${key()}"> mm &nbsp; <span class="hintx">LVO = π × (d/2)² × VTI × HR ÷ current weight</span></td></tr>`});
+ h+=`<tr><td>D. Ao flow and/or Celiac/MCA Doppler</td><td></td><td><label class="o"><input type="radio" name="dao" value="0" data-id="dao" data-k="${key()}">Forward</label></td><td></td><td><label class="o"><input type="radio" name="dao" value="2" data-id="dao" data-k="${key()}">Reversed</label></td><td class="pts" id="daop"></td></tr>`;
+ h+='<tr class="sub"><td colspan="5">Total score</td><td class="pts"><span id="tot">0</span>/12</td></tr></table>';
+ w.innerHTML=h;const box=H('div','crit');box.id='crit';const o=H('div');o.append(w,box);return o}
+const N=id=>{const e=document.getElementById(id);return e&&e.value!==''?parseFloat(e.value):NaN};
+const R=id=>{const e=document.querySelector(`[data-id="${id}"]:checked`);return e?e.value:''};
+const T=(id,h,c)=>{const e=document.getElementById(id);if(e){e.innerHTML=h;if(c!==undefined)e.className=(e.className.split(' ')[0])+(c?' '+c:'')}};
+const ok=x=>!isNaN(x),f1=(x,n=1)=>x.toFixed(n),tk=b=>b?'☑ ':'☐ ';
+function setv(id,v){const e=document.getElementById(id);if(e)e.value=ok(v)?String(Math.round(v*100)/100):''}
+function calc(){
+ // patient / clinical
+ const exam=new Date($('#d').value),dob=new Date($('#dob').value),gaw=N('gaw'),gad=ok(N('gad'))?N('gad'):0;
+ let age=NaN;if(!isNaN(exam)&&!isNaN(dob))age=Math.round((exam-dob)/864e5);window.AGE=age;
+ const bw=N('bw'),cw=N('cw'),kg=ok(cw)?cw/1000:NaN;
+ let s=[];setv('ageb',age);const pb=document.getElementById('pmab');if(pb)pb.value=(ok(gaw)&&ok(age))?`${Math.floor((gaw*7+gad+age)/7)}+${(gaw*7+gad+age)%7}`:'';
+ if(ok(bw))s.push(bw<1000?'ELBW':bw<1500?'VLBW':bw<2500?'LBW':'Birth weight ≥ 2500 g');
+ if(!ok(cw))s.push('Enter current weight: it is used for all ml/kg/min values');T('o_age',s.join(' · '));
+ const sb=N('sbp'),db=N('dbp');let mb=NaN;if(ok(sb)&&ok(db))mb=(sb+2*db)/3;
+ const me=document.getElementById('mbp'),pe=document.getElementById('ppb');if(me)me.value=ok(mb)?String(Math.round(mb)):'';if(pe)pe.value=ok(sb)&&ok(db)?String(Math.round(sb-db)):'';
+ window.MB=mb;window.SB=sb;
+ let low=ok(mb)&&ok(gaw)&&mb<gaw;T('o_bp',low?'⚠ mean BP below GA in weeks (bedside rule of thumb)':'',low?'bad':'');
+ document.querySelectorAll('.spf').forEach(i=>{const ck=i.closest('tr').querySelector('input[type=radio]:checked');i.hidden=!(ck&&ck.value==='Abnormal')});
+ const rx=document.getElementById('rvx');if(rx)rx.hidden=R('rvw')!=='Yes';
+ const sd=N('spre')-N('spost');setv('sdiff',sd);T('o_sp',ok(sd)?(sd>10?'⚠ > 10%':sd>5?'⚠ > 5% (supports R-L shunt, CHOP)':''):'',ok(sd)&&sd>5?'bad':'');
+ const rap=ok(N('rap'))?N('rap'):5,hr=N('hr');
+ [['trpg','pap'],['trpgC','papC']].forEach(([g,pp])=>{if(document.getElementById(pp))setv(pp,ok(N(g))?N(g)+rap:NaN)});
+ ['','C'].forEach(x=>{const mx=N('ivx'+x),mn=N('ivn'+x);let ci=NaN;if(ok(mx)&&ok(mn)&&mx>0)ci=(mx-mn)/mx*100;setv('ivi'+x,ok(ci)?Math.round(ci):NaN);T('o_iv'+x,ok(ci)?(ci>50?'⚠ Hypovolemia (> 50%)':ci>=20?'Normal / euvolemia (20-50%)':'Below 20%'):'',ok(ci)&&ci>50?'wn':'')});
+ // outputs from VTI + diameter
+ [['lvoA','vtiA','aoA'],['lvoB','vtiB','aoB'],['rvoB','rvtiB','rvdB'],['lvoC','vtiC','aoC'],['rvoC','rvtiC','rvdC']].forEach(([o,v,d])=>{
+  if(document.getElementById(o)&&ok(N(v))&&ok(N(d))&&ok(hr)&&ok(kg))setv(o,N(v)*Math.PI*Math.pow(N(d)/20,2)*hr/kg)});
+ [['svrB','lvoB'],['svrC','lvoC']].forEach(([o,l])=>{if(document.getElementById(o)&&ok(mb)&&ok(N(l)))setv(o,(mb-rap)/(N(l)/1000))});
+ const fl=(R('pdaH')==='Yes'&&ok(N('rvoC')))?N('rvoC'):N('lvoC'),dO=fl*1.39*(N('hb')/100)*(N('spre')/100);T('o_do2',ok(dO)?`DO2 ${f1(dO)} mL/kg/min (${R('pdaH')==='Yes'&&ok(N('rvoC'))?'RVO':'LVO'} × 1.39 × Hb × SpO2)${dO<22?' ⚠ < 22':''}`:'',ok(dO)&&dO<22?'bad':'');
+ if(cur==='pda')calcPDA(kg);if(cur==='pphn')calcPPHN(rap);if(cur==='hypo')calcHypo(rap,low)}
+function calcPDA(kg){
+ let tot=0;document.querySelectorAll('.sc td.hit').forEach(x=>x.classList.remove('hit'));
+ document.querySelectorAll('.sv').forEach(i=>{const tr=i.closest('tr'),c=tr.lastElementChild;if(i.value===''){c.textContent='';return}
+  const v=+i.value,a=+i.dataset.a,b=+i.dataset.b,d=+i.dataset.d;const p=d>0?(v<a?0:v<=b?1:2):(v>b?0:v>=a?1:2);c.textContent=p;tot+=p;tr.children[2+p].classList.add('hit')});
+ const dao=R('dao');$('#daop').textContent=dao;if(dao){tot+=+dao;$('#daop').closest('tr').children[dao==='0'?2:4].classList.add('hit')}$('#tot').textContent=tot;
+ const dia=N('dia');T('dcat',ok(dia)?(dia>3?'Large':dia>=1.5?'Moderate':'< 1.5 mm'):'');
+ const u=[[ok(dia)&&dia>1.5,'Ductal diameter > 1.5 mm'],[R('lr')==='Yes','Predominant (> 90%) left-to-right transductal flow'],[tot>=6,'PDA shunt volume score ≥ 6']],um=u.every(x=>x[0]);
+ const b=$('#crit');b.className='crit '+(um?'ok':'');
+ b.innerHTML='<b>Ductal treatment will be recommended if:</b><br>'+u.map(x=>tk(x[0])+x[1]).join('<br>')+`<br><b>${um?'Criteria met':'Criteria not met'}</b>`}
+function calcPPHN(rap){
+ const pg=N('trpg'),sb=window.SB;let pasp=NaN,src='';
+ if(ok(pg)){pasp=pg+rap;src='TR';T('o_tr',`PAP = TR gradient ${f1(pg,0)} + RAP ${rap}`)}else T('o_tr','');
+ if(!ok(pasp)&&ok(N('pdapg'))&&ok(sb)&&R('pdad')==='L-R'){pasp=sb-N('pdapg');src='PDA'}
+ let sev='';if(ok(pasp)&&ok(sb)){const r=pasp/sb;sev=r<1/3?'Not elevated':r<=2/3?'Mild':r<=1?'Moderate':'Severe (suprasystemic)';
+  T('o_ph',`PASP ≈ ${f1(pasp,0)} mmHg (${src}) · PASP/SBP ${f1(r,2)} → ${sev}`,r>1/3?'bad':'')}else T('o_ph','Enter measured TR (or PDA gradient) and systolic BP','hint');
+ const pa=N('paat')/N('rvet');setv('parat',pa);T('o_pa',ok(pa)?(pa<0.31?'⚠ < 0.31 (short)':'≥ 0.31'):'',ok(pa)&&pa<0.31?'bad':'');
+ const f=[];const ivs=R('ivs');
+ if(sev&&sev!=='Not elevated')f.push('PASP/SBP '+sev.split(' ')[0].toLowerCase());
+ if(ok(pa)&&pa<0.31)f.push('short PAAT/RVET');if(ivs&&ivs[0]!=='N')f.push(ivs.split(' (')[0].toLowerCase());
+ if(['R-L','Bidirectional'].includes(R('pdad')))f.push('PDA shunt '+R('pdad'));if(['R-L','Bidirectional'].includes(R('pfo')))f.push('atrial shunt '+R('pfo'));
+ if(R('rvs')==='Dilated')f.push('RV dilated');if(R('rvf')==='Impaired')f.push('RV function impaired');
+ const sd=N('spre')-N('spost');if(sd>5)f.push('pre-post ductal SpO2 gradient > 5%');if(N('tapB')<4)f.push('TAPSE < 4 mm');if(N('facB')<20)f.push('RV FAC < 20%');if(N('eis')>1)f.push('systolic EI above 1.0');
+ let h=f.length?`<b>Findings supporting pulmonary hypertension:</b> ${f.join(' · ')}`:'<b>No supporting findings entered yet.</b>';
+ if(sev)h+=`<br><b>Severity (PASP/SBP):</b> ${sev}`;
+ const ef=N('efB');if(R('lvf')==='Abnormal'||ef<55)h+='<br>⚠ LV systolic dysfunction: consider a post-capillary or biventricular component.';
+ h+='<br>Absent or incomplete TR does not exclude pulmonary hypertension (ASE 2024). In PPHN, hypotension often reflects ventricular dysfunction; support oxygen delivery, not BP alone (CHOP consensus).';
+ const b=$('#pbox');b.className='crit '+(f.length>=2?'no':f.length?'wn':'');b.innerHTML=h}
+function calcHypo(rap,low){
+ const ef=ok(N('efC'))?N('efC'):N('efC2'),lvo=N('lvoC'),svr=N('svrC'),pda=R('pdaH')==='Yes';
+ const imp=R('lvfC')==='Abnormal'||ef<55||N('fsC')<28,okf=!imp&&(R('lvfC')==='Normal'||ef>=55);
+ const pre=R('ivc')==='Collapsed'||R('fill')==='Abnormal'||N('lved')<9.8;
+ const C=[
+ ['I Vasodilatory',[[svr<149,'SVR low'],[okf,'LV function normal or hyperdynamic']],'treat the cause; vasopressor (norepinephrine or vasopressin); dopamine may be added'],
+ ['II Vasoconstrictive',[[svr>246,'SVR high'],[imp||lvo<174,'impaired performance or low output']],'echo first; inotrope (dobutamine or milrinone); mean BP may look normal'],
+ ['III Cardiogenic',[[imp,'impaired systolic performance'],[ok(svr)&&svr<=246,'SVR normal or low']],'treat the cause; inotrope with vasopressor effect (epinephrine) after volume'],
+ ['IV L-R shunt (PDA)',[[pda,'echo evidence of significant PDA shunt']],'see PDA tab; manage the shunt'],
+ ['V Volume depletion',[[pre,'low preload on echo'],[R('ivc')==='Collapsed','IVC collapsed']],'fluids until filling restored (empiric volume up to 20 mL/kg in week 1); avoid inotropes']];
+ const m=C.filter(c=>c[1].every(x=>x[0]));
+ const mk=[[N('lact')>3,'lactate > 3'],[N('bd')>6,'base deficit > 6'],[N('uop')<1,'urine output < 1 mL/kg/h (confirm over ≥ 12 h)']].filter(x=>x[0]).map(x=>x[1]);
+ let h='';
+ if(m.length)h+=m.map(c=>`<b>Category ${c[0]}:</b> ${c[1].map(x=>tk(true)+x[1]).join(' · ')}<br><i>Published algorithm: ${c[2]}.</i>`).join('<br>');
+ else h+='<b>No category fully matches the echo findings entered yet.</b>';
+ h+=`<br><b>Clinical significance markers:</b> ${mk.length?mk.join(' · '):'none entered'}`;
+ const nr=[];if(ok(lvo)&&(lvo<174||lvo>321))nr.push(`LVO ${f1(lvo,0)} outside 174-321`);if(ok(svr)&&(svr<149||svr>246))nr.push(`SVR ${f1(svr,0)} outside 149-246`);
+ if(nr.length)h+=`<br>Outside 10th-90th centile (stable preterm): ${nr.join(' · ')}`;
+ if(low)h+='<br>Mean BP below GA in weeks (rule of thumb). Low BP alone is not shock; mean BP can be normal in vasoconstrictive physiology.';
+ h+='<br>Decision aid based on echo findings (Elsayed and Abdul Wahab 2021; BP phenotype not used). Several mechanisms can overlap; review with a neonatologist experienced in hemodynamics.';
+ const b=$('#hbox');b.className='crit '+(m.length?'wn':'');b.innerHTML=h}
+const today=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
+const LK=SK+'-all';
+let DB;try{DB=JSON.parse(localStorage.getItem(LK)||'null')}catch(_){}
+if(!DB||!Array.isArray(DB.b)||!DB.b.length)DB={c:1,b:[{id:1,s:{},cd:today(),ex:{}}]};
+DB.b.forEach(b=>{if(!b.s)b.s={};if(!b.ex)b.ex={};if(!b.cd)b.cd=today()});
+const baby=()=>DB.b.find(x=>x.id===DB.c)||DB.b[0];
+const exam=mk=>{const b=baby();if(mk&&!b.ex[b.cd])b.ex[b.cd]={};return b.ex[b.cd]||{}};
+const store=(k,mk)=>k.startsWith('b-')?baby().s:exam(mk);
+const V=k=>store(k)[k];
+const put=(k,v)=>{store(k,1)[k]=v};
+const W=()=>{try{localStorage.setItem(LK,JSON.stringify(DB))}catch(_){}};
+const esc=x=>String(x).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+function save(e){const t=e.target,k=t.dataset&&t.dataset.k;if(!k)return;
+ if(t.type==='radio')document.querySelectorAll(`input[name="${t.name}"]`).forEach(r=>put(r.dataset.k,r.checked));else if(t.type==='checkbox')put(k,t.checked);else put(k,t.value);W()}
+function restore(){document.querySelectorAll('[data-k]').forEach(e=>{const v=V(e.dataset.k);if(v===undefined)return;if(e.type==='radio'||e.type==='checkbox')e.checked=!!v;else e.value=v});
+ const d=$('#d');if(d)d.value=baby().cd}
+const hasData=(ex,pre)=>Object.entries(ex||{}).some(([k,v])=>(!pre||k.startsWith(pre+'-'))&&v!==''&&v!==false&&v!==undefined);
+const examDates=pre=>Object.keys(baby().ex).filter(d=>hasData(baby().ex[d],pre)).sort();
+// ---- linked fields (TR gradient <-> Vmax)
+function saveId(id){const e=document.getElementById(id);if(e)save({target:e})}
+function link(e){const t=e.target;[['trv','trpg'],['trvC','trpgC']].forEach(([v,g])=>{if(t.id===v&&ok(N(v))){setv(g,4*N(v)*N(v));saveId(g)}else if(t.id===g&&ok(N(g))&&N(g)>=0){setv(v,Math.sqrt(N(g)/4));saveId(v)}})}
+// ---- keep keyboard focus when the page re-renders
+function keepFocus(fn){const a=document.activeElement,k=a&&a.dataset&&a.dataset.k,id=a&&a.id,p=a&&a.selectionStart;fn();
+ const n=k?document.querySelector(`[data-k="${k}"]`):id?document.getElementById(id):null;
+ if(n&&n!==a){n.focus();try{if(p!=null)n.setSelectionRange(p,p)}catch(_){}}}
+// ---- babies and exams
+const nm=b=>((b.s['b-name']||'').trim()||(b.s['b-id']||'').trim());
+function toast(t){const e=H('div','toast',t);document.body.append(e);setTimeout(()=>e.remove(),1800)}
+function beds(){const n=$('#beds');n.innerHTML='';DB.b.forEach((b,i)=>{const e=H('button','bed',`<b>${esc(nm(b)||'Baby '+(i+1))}</b><i>${esc(b.s['b-id']||'')||'&nbsp;'}</i>`);e.setAttribute('role','tab');e.setAttribute('aria-current',b.id===DB.c);
+ e.onclick=()=>{DB.c=b.id;CMP='auto';W();beds();render();exbar();refreshRep()};n.append(e)});
+ const a=H('button','bed add','+ Baby');a.onclick=addBaby;n.append(a)}
+function addBaby(){const id=Math.max(0,...DB.b.map(x=>x.id))+1;DB.b.push({id,s:{},cd:today(),ex:{}});DB.c=id;CMP='auto';W();beds();render();exbar();refreshRep();window.scrollTo(0,0)}
+function exbar(){const n=$('#exs'),b=baby();n.innerHTML='<span>Exams:</span>';const ds=[...new Set([...examDates(),b.cd])].sort();
+ ds.forEach(d=>{const e=H('button','',d);e.setAttribute('aria-current',d===b.cd);e.onclick=()=>{b.cd=d;CMP='auto';W();render();exbar();refreshRep()};n.append(e)})}
+let CMP='auto';
+// ---- reading the filled form from the page
+function valOf(td){const src=[...td.querySelectorAll('input,textarea')],c=td.cloneNode(true);let any=!!td.querySelector('.out:not(:empty):not(.hint),.badge:not(:empty)');
+ const pairs=[...c.querySelectorAll('input,textarea')].map((x,i)=>[x,src[i]]);
+ pairs.forEach(([x,o])=>{let v='';const hid=o.closest('[hidden]');
+  if(o.type==='radio'||o.type==='checkbox'){const lb=x.closest('label'),txt=lb?lb.textContent.trim():o.value;const t=document.createTextNode(!hid&&o.checked?txt+' ':'');if(!hid&&o.checked)any=true;(lb||x).replaceWith(t);return}
+  if(!hid&&o.value!==''){v=o.value;any=true}else{const nf=x.closest('.nf');if(nf){nf.remove();return}}x.replaceWith(document.createTextNode(v?v+' ':''))});
+ c.querySelectorAll('[hidden],.note,.hint,.hintx').forEach(n=>n.remove());
+ return {t:c.textContent.replace(/\s+/g,' ').trim(),any}}
+function rowsOf(){const out=[];let sec='';
+ ['#case','#form'].forEach(r=>$(r).querySelectorAll('h2,summary,tr,.crit,textarea').forEach(e=>{
+  if(e.matches('h2,summary')){sec=e.textContent.trim();return}
+  if(e.matches('textarea')){if(e.value.trim())out.push({sec,kind:'rec',label:'Recommendation',val:e.value.trim()});return}
+  if(e.matches('.crit')){const q=document.createElement('div');q.innerHTML=e.innerHTML.replace(/<br\s*\/?>/g,'\n');const t=q.textContent.trim();if(t)out.push({sec,kind:'crit',label:'',val:t});return}
+  if(e.closest('[hidden]'))return;
+  if(e.matches('tr.sub')){if(e.querySelector('#tot')&&([...document.querySelectorAll('.sv')].some(i=>i.value!=='')||R('dao')))out.push({sec,kind:'row',label:'Total score',val:$('#tot').textContent+'/12'});return}
+  if(e.querySelector('th'))return;
+  if(e.classList.contains('ln')){let last=null;e.querySelectorAll('.it').forEach(it=>{const lb=it.querySelector('.lbl'),L=lb?lb.textContent.trim():'',v=valOfItem(it);if(!v.any)return;if(L){last={sec,kind:'row',label:L,val:v.t};out.push(last)}else if(last)last.val+=' '+v.t});return}
+  const tds=e.children;if(tds.length<2)return;
+  if(e.closest('.sc')){const dao=e.querySelector('[data-id="dao"]');let val;
+   if(dao){const ck=e.querySelector('input:checked');val=ck?ck.closest('label').textContent.trim():''}else val=e.querySelector('.sv')?e.querySelector('.sv').value:valOf(tds[1]).t;
+   const sc=tds[tds.length-1].textContent.trim();if(!val)return;out.push({sec,kind:'row',label:tds[0].textContent.trim(),val:val+(sc!==''&&tds.length>2?` (score ${sc})`:'')});return}
+  const v=valOf(tds[1]);if(v.any)out.push({sec,kind:'row',label:tds[0].textContent.trim(),val:v.t})}));
+ return out}
+function valOfItem(it){const w=document.createElement('div');w.append(...[...it.childNodes].filter(n=>!(n.classList&&n.classList.contains('lbl'))).map(n=>n.cloneNode(true)));
+ // map cloned inputs back to the live ones
+ const live=[...it.querySelectorAll('input')],cl=[...w.querySelectorAll('input')];cl.forEach((x,i)=>{x._o=live[i]});
+ let any=false;cl.forEach(x=>{const o=x._o;if(o.type==='radio'||o.type==='checkbox'){const lb=x.closest('label'),t=lb?lb.textContent.trim():o.value;const n=document.createTextNode(o.checked?t+' ':'');if(o.checked)any=true;(lb||x).replaceWith(n)}else{const v=o.value;if(v!==''){any=true}else{const nf=x.closest('.nf');if(nf){nf.remove();return}}x.replaceWith(document.createTextNode(v?v+' ':''))}});
+ w.querySelectorAll('.note,.hint,.hintx').forEach(n=>n.remove());
+ if(it.querySelector('.out:not(:empty):not(.hint)'))any=true;
+ return {t:w.textContent.replace(/\s+/g,' ').trim(),any}}
+function snapRows(date,form){const b=baby(),od=b.cd,of=cur;let r;keepFocus(()=>{b.cd=date;cur=form;render();r=rowsOf();b.cd=od;cur=of;render()});return r}
+// ---- report
+const num=v=>{const m=/^(-?\d+(?:\.\d+)?)\s*(.*)$/.exec(v);return m?{n:+m[1],u:m[2].trim()}:null};
+function cmpList(cur_,prev){const k=(rows)=>{const seen={};return rows.filter(r=>r.kind==='row'&&r.sec!=='Patient').map(r=>{const b=r.sec+'|'+r.label;seen[b]=(seen[b]||0)+1;return {key:b+'#'+seen[b],r}})};
+ const A=k(cur_),B=k(prev),mb=new Map(B.map(x=>[x.key,x.r])),out=[];
+ A.forEach(({key,r})=>{const q=mb.get(key);mb.delete(key);out.push({label:r.label,c:r.val,p:q?q.val:''})});
+ mb.forEach(r=>out.push({label:r.label,c:'',p:r.val}));
+ return out.map(o=>{let d='';if(o.p===o.c)d='no change';else if(!o.p)d='new';else if(!o.c)d='not entered now';else{const x=num(o.p),y=num(o.c);if(x&&y&&x.u===y.u){const df=Math.round((y.n-x.n)*100)/100;d=(df>0?'+':'')+df+(y.u&&y.u[0]!=='('?(y.u[0]==='/'?'':' ')+y.u:'')}else d='changed'}return {...o,d}})}
+function build(title,date,rows,prevDate,prevRows){
+ const pat=rows.filter(r=>r.sec==='Patient'&&r.kind==='row'),T=[],Hh=[];
+ const head=pat.filter(r=>r.label!=='Study date').map(r=>`${r.label}: ${r.val}`).join(' · ');
+ const grp=[];rows.filter(r=>r.sec!=='Patient'&&r.kind==='row').forEach(r=>{let g=grp.find(x=>x.s===r.sec);if(!g)grp.push(g={s:r.sec,r:[]});g.r.push(r)});
+ const crit=rows.filter(r=>r.kind==='crit'),rec=rows.filter(r=>r.kind==='rec');
+ T.push('WCH NICU - ECHOCARDIOGRAPHY REPORT: '+title,'Study date: '+date,head,'','FINDINGS');
+ Hh.push(`<h3>${esc(title)}</h3><p class="kv"><b>Study date:</b> ${esc(date)}</p><p class="kv">${esc(head)}</p><h3>Findings</h3>`);
+ grp.forEach(g=>{T.push('['+g.s+']');Hh.push(`<div class="sec">${esc(g.s)}</div>`);g.r.forEach(r=>{T.push(`  ${r.label}: ${r.val}`);Hh.push(`<div class="kv"><b>${esc(r.label)}:</b> ${esc(r.val)}</div>`)})});
+ if(!grp.length){T.push('  (nothing entered yet)');Hh.push('<p class="mu">Nothing entered yet.</p>')}
+ if(crit.length){T.push('','INTERPRETATION');Hh.push('<h3>Interpretation</h3>');crit.forEach(r=>{T.push(r.val.split('\n').map(x=>'  '+x).join('\n'));Hh.push(`<div class="kv rt">${esc(r.val)}</div>`)})}
+ T.push('','RECOMMENDATION');Hh.push('<h3>Recommendation</h3>');
+ if(rec.length){T.push(rec[0].val);Hh.push(`<div class="kv rt">${esc(rec[0].val)}</div>`)}else{T.push('  (not written yet)');Hh.push('<p class="mu">Not written yet. Type it in the Recommendation box of the form.</p>')}
+ if(prevDate&&prevRows){const L=cmpList(rows,prevRows);T.push('','COMPARISON WITH EXAM OF '+prevDate+' (previous | current | change)');
+  Hh.push(`<h3>Comparison with exam of ${esc(prevDate)}</h3><div class="sc-wrap"><table class="cmp"><tr><th>Parameter</th><th>${esc(prevDate)}</th><th>${esc(date)}</th><th>Change</th></tr>`);
+  L.forEach(o=>{T.push(`  ${o.label}: ${o.p||'-'} | ${o.c||'-'} | ${o.d}`);Hh.push(`<tr><td>${esc(o.label)}</td><td>${esc(o.p||'-')}</td><td>${esc(o.c||'-')}</td><td class="${o.d==='no change'?'mu':'up'}">${esc(o.d)}</td></tr>`)});
+  if(!L.length){T.push('  nothing to compare');Hh.push('<tr><td colspan="4" class="mu">Nothing to compare.</td></tr>')}Hh.push('</table></div>')}
+ T.push('','Decision aid from echo findings; interpret with the clinical picture.');
+ return {text:T.join('\n'),html:Hh.join('')}}
+function prevFor(form){const b=baby(),ds=examDates(form).filter(d=>d<b.cd);if(CMP==='none')return '';if(CMP!=='auto')return ds.includes(CMP)||baby().ex[CMP]?CMP:'';return ds.length?ds[ds.length-1]:''}
+function reportFor(form,live){const b=baby(),d=b.cd,rows=live?rowsOf():snapRows(d,form),pd=prevFor(form),pr=pd?snapRows(pd,form):null;return build(FORMS[form].title,d,rows,pd,pr)}
+function refreshRep(){const sel=$('#cmpsel'),b=baby(),ds=examDates().filter(d=>d<b.cd);
+ sel.innerHTML='<option value="auto">Previous exam (auto)</option><option value="none">No comparison</option>'+ds.map(d=>`<option value="${d}">${d}</option>`).join('');sel.value=CMP;if(sel.value!==CMP){CMP='auto';sel.value='auto'}
+ $('#repbody').innerHTML=reportFor(cur,true).html}
+async function cp(all){let t='';const keep=cur;
+ if(all){const parts=[];keepFocus(()=>{Object.keys(FORMS).forEach(k=>{cur=k;parts.push(reportFor(k,false).text)});cur=keep;render()});t=parts.join('\n\n----------------------------------------\n\n')}
+ else t=reportFor(cur,true).text;
+ try{await navigator.clipboard.writeText(t);toast('Copied')}catch(_){const x=$('#sum');x.hidden=false;x.value=t;x.focus();x.select();toast('Select and copy the text')}}
+$('#cp1').onclick=()=>cp(false);$('#cpall').onclick=()=>cp(true);
+$('#prr').onclick=()=>{refreshRep();document.body.classList.add('pr');window.print();setTimeout(()=>document.body.classList.remove('pr'),500)};
+$('#cmpsel').onchange=e=>{CMP=e.target.value;refreshRep()};
+$('#del').onclick=()=>{if(!confirm('Delete this baby and all exams?'))return;DB.b=DB.b.filter(x=>x.id!==DB.c);if(!DB.b.length)DB.b=[{id:1,s:{},cd:today(),ex:{}}];DB.c=DB.b[0].id;CMP='auto';W();beds();render();exbar();refreshRep()};
+$('#bk').onclick=async()=>{const blob=new Blob([JSON.stringify(DB)],{type:'application/json'}),f=new File([blob],'wch-echo-backup-'+today()+'.json',{type:'application/json'});
+ try{if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f],title:'WCH Echo backup'});return}}catch(e){if(e.name==='AbortError')return}
+ const a=H('a');a.href=URL.createObjectURL(blob);a.download=f.name;a.click()};
+$('#rin').onchange=e=>{const f=e.target.files[0];if(!f)return;f.text().then(t=>{try{const d=JSON.parse(t);if(!d||!Array.isArray(d.b))throw 0;if(!confirm('Replace all babies on this device with the backup ('+d.b.length+' babies)?'))return;DB=d;DB.b.forEach(b=>{if(!b.s)b.s={};if(!b.ex)b.ex={};if(!b.cd)b.cd=today()});if(!DB.b.some(x=>x.id===DB.c))DB.c=DB.b[0].id;CMP='auto';W();beds();render();exbar();refreshRep()}catch(_){alert('This file is not a WCH Echo backup.')}});e.target.value=''};
+// ---- events
+let st;const lazy=()=>{clearTimeout(st);st=setTimeout(()=>{keepFocus(()=>{refreshRep();exbar()});if(/^b-(name|id)$/.test(window.LASTK||''))beds()},450)};
+document.addEventListener('input',e=>{if(e.target.id==='d')return;save(e);link(e);window.LASTK=e.target.dataset&&e.target.dataset.k;calc();lazy()});
+document.addEventListener('change',e=>{const t=e.target;
+ if(t.id==='d'){if(!t.value){t.value=baby().cd;return}const b=baby();if(t.value===b.cd)return;b.cd=t.value;CMP='auto';W();const known=hasData(b.ex[b.cd]);render();exbar();refreshRep();toast(known?'Opened the exam of '+b.cd:'New exam for '+b.cd+': enter the new findings');return}
+ save(e);if(t.dataset&&t.dataset.id==='rs')rsRender();calc();lazy()});
+function tabs(){const n=$('#tabs');n.innerHTML='';Object.entries(FORMS).forEach(([k,f])=>{const b=H('button','tab',f.tab);b.setAttribute('role','tab');
+ b.setAttribute('aria-current',k===cur);b.onclick=()=>{cur=k;try{localStorage.setItem(SK+'-tab',k)}catch(_){}tabs();render();exbar();refreshRep()};n.append(b)})}
+$('#print').onclick=()=>window.print();
+$('#clear').onclick=()=>{if(!confirm('Clear this form for the open exam?'))return;const ex=exam();Object.keys(ex).filter(k=>k.startsWith(cur+'-')).forEach(k=>delete ex[k]);W();render();exbar();refreshRep()};
+$('#new').onclick=addBaby;
+beds();tabs();render();exbar();refreshRep();
+if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}))}
+</script>
+</body>
+</html>
